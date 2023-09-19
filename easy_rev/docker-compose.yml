@@ -1,0 +1,10 @@
+services:
+  rev_app:
+    build: ./app
+    ports:
+      - "65432:65432"
+    restart:
+      always
+    environment:
+      - FLAG=cnctf{heyhey} #if possible
+
