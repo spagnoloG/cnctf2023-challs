@@ -22,12 +22,13 @@ def return_validation_samples(train_samples: list):
     for file in os.listdir(annotations_dir):
         tree = ET.parse(os.path.join(annotations_dir, file))
         root = tree.getroot()
-        for obj in root.iter('object'):
-            for name in obj.iter('name'):
+        for obj in root.iter("object"):
+            for name in obj.iter("name"):
                 if name.text in train_samples:
                     val_samples.append(file)
 
     return val_samples
+
 
 def copy_over_files(val_samples: list):
     os.makedirs(dataset_val_dir, exist_ok=True)
@@ -35,10 +36,12 @@ def copy_over_files(val_samples: list):
         shutil.copy(os.path.join(val_samples_dir, file[:-4] + ".JPEG"), dataset_val_dir)
         shutil.copy(os.path.join(annotations_dir, file), dataset_val_dir)
 
+
 def main():
     train_samples = grab_train_samples()
     val_samples = return_validation_samples(train_samples)
     copy_over_files(val_samples)
+
 
 if __name__ == "__main__":
     main()
