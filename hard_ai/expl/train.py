@@ -158,7 +158,5 @@ def main():
 
     train(dataloader_train, dataloader_val)
 
-
-
 if __name__ == "__main__":
     main()

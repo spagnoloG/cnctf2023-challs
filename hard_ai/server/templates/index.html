@@ -1,9 +1,93 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My Flask App</title>
+    <title>Input Counter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* General */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #282828;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1, p {
+            text-align: center;
+        }
+
+        /* Material Shadows */
+        .shadow-1 {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .shadow-2 {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Container for the main content */
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #FFF;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Cute and Materialistic Image Styles */
+        img {
+            width: 100%;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        /* Form styles */
+        form {
+            text-align: center;
+        }
+
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="submit"] {
+            background-color: #FF4081; /* Vibrant Pink Color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #E0407E;
+        }
+
+    </style>
 </head>
 <body>
-    <h1>{{ message }}</h1
+
+<div class="container">
+    <h1>CyberNight2023 image recognition</h1>
+    <p>Welcome to the CyberNight2023 Image Recognition Challenge! Your task is to classify the images presented below into one of 16 distinct classes. To succeed and proceed, you need to achieve an accuracy of at least 80%. So, sharpen your eyes and let's get started!</p>
+    <p>You have submitted {{ session['input_count'] }} / 100 times.</p>
+    <p>Correct attempts so far {{ session['correct_ones'] }} / 100 times.</p>
+    <img class="shadow-2" src="{{ url_for('send_image', filename=image) }}" alt="Random Image">
+    <p>Enter the class you see in the image above.</p>
+    <form action="/submit" method="post">
+        <input type="text" name="user_input">
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+</div>
+
 </body>
 </html>
