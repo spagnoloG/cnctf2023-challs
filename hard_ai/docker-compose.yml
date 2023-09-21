@@ -1,0 +1,10 @@
+services:
+  hard_ai:
+    build: ./server
+    ports:
+      - "5000:5000"
+    restart:
+      always
+    environment:
+      - FLAG=cnctf{ojlatest123}
+

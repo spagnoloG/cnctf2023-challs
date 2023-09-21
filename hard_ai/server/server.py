@@ -14,7 +14,7 @@ import xml.etree.ElementTree as ET
 app = Flask(__name__)
 
 app.secret_key = "s3cr3t_c0d3_4pp_133t"
-BASE_PATH = "../dataset_val/"
+BASE_PATH = "dataset_val/"
 IMAGE_FILES = sorted([f for f in os.listdir(BASE_PATH) if f.endswith(".JPEG")])
 XML_FILES = sorted([f for f in os.listdir(BASE_PATH) if f.endswith(".xml")])
 FLAG = os.environ.get("FLAG", "flag{this_is_a_fake_flag}")
@@ -77,4 +77,4 @@ def send_xml(filename):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False, host='0.0.0.0', port=5000)

@@ -36,39 +36,30 @@ class ImageNetSubsetTrain(Dataset):
         unique_labels = sorted(list(set(self.labels)))
         self.label_to_int = {label: idx for idx, label in enumerate(unique_labels)}
 
-    def _one_hot_encode(self, label):
-        one_hot = torch.zeros(len(self.label_to_int))
-        one_hot[self.label_to_int[label]] = 1
-        return one_hot
-
     def return_label_map(self):
-        lmap = {}
-        for label, idx in self.label_to_int.items():
-            one_hot = self._one_hot_encode(label)
-            lmap[label] = one_hot
-        return lmap
+        return self.label_to_int
 
     def __getitem__(self, idx):
         file_name = self.file_names[idx]
         label = file_name.split("/")[-2]
         image = Image.open(file_name).convert("RGB")
         image = F.to_tensor(image)
+        image = F.resize(image, (224, 224), antialias=True)
         image = F.normalize(
             image, [0.485, 0.456, 0.406], [0.229, 0.224, 0.225]
         )  # ImageNet mean and std
-        image = F.resize(image, (224, 224), antialias=True)
 
-        return image, self._one_hot_encode(label)
+        return image, self.label_to_int[label]
 
     def __len__(self):
         return len(self.file_names)
 
 
 class ImageNetSubsetVal(Dataset):
-    def __init__(self, label_to_hvec):
+    def __init__(self, label_to_int):
         self.dataset_path = "../dataset_val/"
         self.labels_to_file = []
-        self.label_to_hvec = label_to_hvec
+        self.label_to_int = label_to_int 
         self._load_data()
 
     def _load_data(self):
@@ -85,12 +76,12 @@ class ImageNetSubsetVal(Dataset):
         image_name = file.split(".")[0] + ".JPEG"
         image = Image.open(os.path.join(self.dataset_path, image_name)).convert("RGB")
         image = F.to_tensor(image)
+        image = F.resize(image, (224, 224), antialias=True)
         image = F.normalize(
             image, [0.485, 0.456, 0.406], [0.229, 0.224, 0.225]
         )  # ImageNet mean and std
-        image = F.resize(image, (224, 224), antialias=True)
 
-        return image, self.label_to_hvec[label]
+        return image, self.label_to_int[label]
 
     def __len__(self):
         return len(self.labels_to_file)
@@ -101,12 +92,12 @@ def train(dataloader_train, dataloader_val, epochs=4):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     model = timm.create_model(
-        "vit_base_patch16_224", pretrained=True, num_classes=num_classes
+        "swinv2_cr_small_224", pretrained=True, num_classes=num_classes
     )
     model = model.to(device)
 
     criterion = CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    optimizer = optim.Adam(model.parameters(), lr=0.00001)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.9)
 
     for epoch in range(epochs):
@@ -114,7 +105,7 @@ def train(dataloader_train, dataloader_val, epochs=4):
         model.train()
         train_loss = 0.0
         for images, labels in tqdm(dataloader_train, desc=f"Epoch {epoch+1}/{epochs}"):
-            images, labels = images.to(device), labels.argmax(1).to(device)
+            images, labels = images.to(device), labels.to(device)
 
             optimizer.zero_grad()
             outputs = model(images)
@@ -135,12 +126,11 @@ def train(dataloader_train, dataloader_val, epochs=4):
             for images, labels in tqdm(
                 dataloader_val, desc=f"Epoch {epoch+1}/{epochs}"
             ):
-                images, labels = images.to(device), labels.argmax(1).to(device)
+                images, labels = images.to(device), labels.to(device)
 
                 outputs = model(images)
                 loss = criterion(outputs, labels)
                 val_loss += loss.item() * images.size(0)
-
                 _, predicted = outputs.max(1)
                 total += labels.size(0)
                 correct += predicted.eq(labels).sum().item()
@@ -160,14 +150,14 @@ def train(dataloader_train, dataloader_val, epochs=4):
 
 def main():
     dataset_train = ImageNetSubsetTrain()
-    label_to_hvec = dataset_train.return_label_map()
-    dataset_val = ImageNetSubsetVal(label_to_hvec)
+    label_to_int = dataset_train.return_label_map()
+    dataset_val = ImageNetSubsetVal(label_to_int)
 
     dataloader_train = DataLoader(
-        dataset_train, batch_size=16, shuffle=True, num_workers=4
+        dataset_train, batch_size=8, shuffle=True, num_workers=os.cpu_count()
     )
     dataloader_val = DataLoader(
-        dataset_val, batch_size=16, shuffle=False, num_workers=4
+        dataset_val, batch_size=8, shuffle=False, num_workers=os.cpu_count()
     )
     torch.backends.cudnn.benchmark = True  # Enable faster training
 
