@@ -9,7 +9,7 @@
 * flags: cnctf{hejhej}
 
 ## Description:
-Simple netcat listeners that provides string and waits 2 second to be reversed.
+If you want to get the precious flag, you'll need to show this server that you can reverse strings like a pro... but there's a catch!
 	
 ## Deployment 
 * Deploy the docker image. It is listening on port 65432, map it to whatever port is most convenient.

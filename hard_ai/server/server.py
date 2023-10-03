@@ -29,7 +29,7 @@ def index():
 
     if session["input_count"] >= 100:
         session.pop("input_count", None)
-        if session["correct_ones"] >= 80:
+        if session["correct_ones"] >= 70:
             return FLAG
         return "You've reached the limit of 100 inputs!"
 

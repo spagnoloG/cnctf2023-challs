@@ -9,11 +9,12 @@
 * flags: cnctf{change_accoridngly_in_docker_compose}
 
 ## Description:
-Players should classify images provided on the website at least 80% times correctly.
+Fun little challange to sharpen your eyes:)
 	
 ## Deployment 
 * Deploy the docker image. It is listening on port 5000, map it to whatever port is most convenient.
-* players should get this download link https://nextcloud.spanskiduh.dev/s/Q8zWDAtLoAHmJaA 
+* players should get this download link https://nextcloud.spanskiduh.dev/s/f8wJQFYqjqPsBLN 
 
 ## Solution / writeup
-The solution script is in the expl directory. Not finished yet. Will finish when there will be time. There is also possible workaround without training the model. 
+User should download the train dataset and then train the model to 16 classes. After tha the user
+should write a script to automatically download and classify images. The accuracy should be at least 70%.

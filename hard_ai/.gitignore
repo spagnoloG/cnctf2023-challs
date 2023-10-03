@@ -1,3 +1,7 @@
 .venv/*
 dataset_val/*
 dataset_train/*
+dataset_val.zip
+dataset_train.zip
+**/.venv/
+expl/checkpoint.pth

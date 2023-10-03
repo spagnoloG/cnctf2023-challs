@@ -59,7 +59,7 @@ class ImageNetSubsetVal(Dataset):
     def __init__(self, label_to_int):
         self.dataset_path = "../dataset_val/"
         self.labels_to_file = []
-        self.label_to_int = label_to_int 
+        self.label_to_int = label_to_int
         self._load_data()
 
     def _load_data(self):
@@ -87,17 +87,26 @@ class ImageNetSubsetVal(Dataset):
         return len(self.labels_to_file)
 
 
+def save_checkpoint(model, optimizer, epoch, path="checkpoint.pth"):
+    """Save a model checkpoint"""
+    state = {
+        "epoch": epoch,
+        "model_state_dict": model.state_dict(),
+        "optimizer_state_dict": optimizer.state_dict(),
+    }
+    torch.save(state, path)
+    print(f"Checkpoint saved to {path}")
+
+
 def train(dataloader_train, dataloader_val, epochs=4):
     num_classes = len(dataloader_train.dataset.label_to_int)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model = timm.create_model(
-        "swinv2_cr_small_224", pretrained=True, num_classes=num_classes
-    )
+    model = timm.create_model("res2next50", pretrained=True, num_classes=num_classes)
     model = model.to(device)
 
     criterion = CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.00001)
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.9)
 
     for epoch in range(epochs):
@@ -145,6 +154,8 @@ def train(dataloader_train, dataloader_val, epochs=4):
         # Update learning rate
         scheduler.step()
 
+    save_checkpoint(model, optimizer, epochs, "checkpoint.pth")
+
     print("Finished Training!")
 
 
@@ -154,10 +165,10 @@ def main():
     dataset_val = ImageNetSubsetVal(label_to_int)
 
     dataloader_train = DataLoader(
-        dataset_train, batch_size=8, shuffle=True, num_workers=os.cpu_count()
+        dataset_train, batch_size=16, shuffle=True, num_workers=os.cpu_count()
     )
     dataloader_val = DataLoader(
-        dataset_val, batch_size=8, shuffle=False, num_workers=os.cpu_count()
+        dataset_val, batch_size=16, shuffle=False, num_workers=os.cpu_count()
     )
     torch.backends.cudnn.benchmark = True  # Enable faster training
 
