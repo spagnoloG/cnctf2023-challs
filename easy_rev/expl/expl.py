@@ -1,7 +1,7 @@
 from pwn import *
 
 def main():
-    r = remote('127.0.0.1', 65432)
+    r = remote('78.47.48.76', 8009)
 
     random_str = r.recvline().decode().strip()
     print(f"Received string: {random_str}")

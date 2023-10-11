@@ -1,4 +1,4 @@
-# How do I use pwntools?
+# Can I see clearly? 
 
 ## Details
 * points: 500
@@ -9,7 +9,8 @@
 * flags: cnctf{change_accoridngly_in_docker_compose}
 
 ## Description:
-Fun little challange to sharpen your eyes:)
+Fun little challange to sharpen your eyes:). Here are the files you will require: [Train dataset](https://nextcloud.spanskiduh.dev/s/f8wJQFYqjqPsBLN)
+The inputs are folder names for each class.
 	
 ## Deployment 
 * Deploy the docker image. It is listening on port 5000, map it to whatever port is most convenient.

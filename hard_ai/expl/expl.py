@@ -8,7 +8,7 @@ import torchvision.transforms.functional as F
 import os
 from torch.utils.data import Dataset
 
-BASE_URL = "http://localhost:5000/"  # Replace with the actual website domain
+BASE_URL = "https://chall1.cybernight.org/"  # Replace with the actual website domain
 
 
 class ImageNetSubsetTrain(Dataset):
@@ -89,46 +89,52 @@ def classify_image(model, image_path, label_map):
     ]  # Return the class label
 
 
-# Using a session to maintain state across requests
-with requests.Session() as session:
-    label_map = ImageNetSubsetTrain().return_label_map()
+def main():
+    # Using a session to maintain state across requests
+    with requests.Session() as session:
+        label_map = ImageNetSubsetTrain().return_label_map()
 
-    model = load_model("./checkpoint.pth", len(label_map))
+        model = load_model("./checkpoint.pth", len(label_map))
 
-    for i in range(100):
-        # Request the page
-        response = session.get(BASE_URL)
-        response.raise_for_status()
+        for i in range(100):
+            # Request the page
+            response = session.get(BASE_URL)
+            response.raise_for_status()
 
-        soup = BeautifulSoup(response.text, "html.parser")
-        img_tag = soup.find("img", class_="shadow-2")
+            soup = BeautifulSoup(response.text, "html.parser")
+            img_tag = soup.find("img", class_="shadow-2")
 
-        p_tags = soup.find_all("p")
-        print(p_tags)
+            p_tags = soup.find_all("p")
+            print(p_tags)
 
-        # Download image
-        img_url = BASE_URL + img_tag["src"]
-        img_response = session.get(img_url, stream=True)
-        img_response.raise_for_status()
+            # Download image
+            img_url = BASE_URL + img_tag["src"]
+            img_response = session.get(img_url, stream=True)
+            img_response.raise_for_status()
 
-        with open(f"image_{i}.jpg", "wb") as img_file:
-            for chunk in img_response.iter_content(chunk_size=8192):
-                img_file.write(chunk)
+            with open(f"image_{i}.jpg", "wb") as img_file:
+                for chunk in img_response.iter_content(chunk_size=8192):
+                    img_file.write(chunk)
 
-        classified_class = classify_image(model, f"image_{i}.jpg", label_map)
+            classified_class = classify_image(model, f"image_{i}.jpg", label_map)
 
-        # Assume you know the class or have a way to predict it.
-        # Replace 'your_class_here' with the actual class.
-        data = {"user_input": classified_class}
+            # Assume you know the class or have a way to predict it.
+            # Replace 'your_class_here' with the actual class.
+            data = {"user_input": classified_class}
 
-        # Submit the class
-        submit_response = session.post(BASE_URL + "/submit", data=data)
-        submit_response.raise_for_status()
+            # Submit the class
+            submit_response = session.post(BASE_URL + "/submit", data=data)
+            submit_response.raise_for_status()
 
-        if "cnctf" in submit_response.text:
+            if "cnctf" in submit_response.text:
+                print(submit_response.text)
+                exit(0)
+                break
+
             print(submit_response.text)
-            break
 
-        sleep(0.1)
+    print("Finished all 100 iterations!")
 
-print("Finished all 100 iterations!")
+
+if __name__ == "__main__":
+    main()

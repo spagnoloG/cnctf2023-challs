@@ -5,3 +5,4 @@ dataset_val.zip
 dataset_train.zip
 **/.venv/
 expl/checkpoint.pth
+*jpg
