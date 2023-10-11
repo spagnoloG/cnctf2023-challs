@@ -8,7 +8,8 @@ import torchvision.transforms.functional as F
 import os
 from torch.utils.data import Dataset
 
-BASE_URL = "https://chall1.cybernight.org/"  # Replace with the actual website domain
+#BASE_URL = "https://chall1.cybernight.org/"  # Replace with the actual website domain
+BASE_URL="http://localhost:5000"
 
 
 class ImageNetSubsetTrain(Dataset):

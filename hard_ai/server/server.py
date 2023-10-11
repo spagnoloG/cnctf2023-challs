@@ -29,9 +29,10 @@ def index():
 
     if session["input_count"] >= 100:
         session.pop("input_count", None)
-        if session["correct_ones"] >= 70:
-            return FLAG
         return "You've reached the limit of 100 inputs!"
+
+    if session["correct_ones"] >= 70:
+        return FLAG
 
     random_image = random.choice(IMAGE_FILES)
     session["current_image"] = random_image
